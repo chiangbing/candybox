@@ -14,13 +14,6 @@ get_tables() {
 
 # main
 if [ "$BASH_SOURCE" == "$0" ]; then
-    if [ -z "$1" ]; then
-        echo "$0 <inputdir> [tablelist]" >&2
-        exit 1
-    fi
-
-    input_dir=$1
-    shift 1
     table_list=$1
 
     # get list from table names
