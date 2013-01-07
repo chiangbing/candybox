@@ -19,7 +19,7 @@ Export HBase table data to specified directory. (via [org.apache.hadoop.hbase.ma
 ```bash
 $ ./exp_data.sh <outputdir> [tablelist]
 ```
-If `tablelist` is absent, all tables are exported.
+If `tablelist` is absent, all tables are exported. The exported data can be imported to current/another cluster later with `imp_data.sh`.
 
 ### imp_data.sh
 Import HBase table data from specified directory to tables. (via [org.apache.hadoop.hbase.mapreduce.Import](http://hbase.apache.org/book/ops_mgt.html#import) )
