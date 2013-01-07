@@ -3,7 +3,7 @@
 get_tables() {
     if [ -z "$1" ]; then
         tab_dirs=( $(hadoop fs -ls /import | grep -E '^d' | awk '{print $8}') )
-        for dir in ${tab_dirs}; do
+        for dir in ${tab_dirs[@]}; do
             echo $(basename $dir)
         done
     else
