@@ -11,7 +11,7 @@ Export HBase table schemas (dump to stdout).
 ```bash
 $ ./exp_schema.sh [tablelist]
 ```
-The optional argument `tablelist` should be a file containing a list of table name to be exported. `If `tablelist` is absent, then schema of all tables are dumped to stdout.
+The optional argument `tablelist` should be a file containing a list of table name to be exported. If `tablelist` is absent, then schema of all tables are dumped to stdout.
 The dumped schema can be later executed in `hbase shell` to create tables.
 
 ### exp_data.sh
