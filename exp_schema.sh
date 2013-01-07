@@ -18,10 +18,17 @@ if [ "$BASH_SOURCE" == "$0" ]; then
 
     # output create table statement for each table
     for tab in ${tables[@]}; do
-      echo -n "create '$tab',"
+      echo -n "create '$tab', "
       echo "describe '$tab'" | hbase shell | \
-        sed -n '/^DESC/,/row(s)/p' | grep -v -E '(^DESC|row\(s\))' | cut -b -107 | tr -d '\n ' | \
-        sed 's/.*FAMILIES=>\[\(.*\)\]}$/\1/'
-      echo
+        awk 'BEGIN { x = 0 } 
+            { if ($0 ~ /^DESC/) { 
+                x=1; next; 
+              } 
+              if ($0 ~ /row\(s\)/) x=0; 
+              if (x == 1) { 
+                match($0, /FAMILIES => \[(.*)\]/, arr); 
+                print arr[1]
+              }
+            }'
     done
 fi
