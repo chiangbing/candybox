@@ -1,7 +1,7 @@
-htool
+CandyBox
 =====
 
-Some tools.
+My lovely scriptlets.
 
 HBase Export/Import
 -------------------
