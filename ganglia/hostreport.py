@@ -72,8 +72,7 @@ def plot_mem(start_time, end_time, host, rrd_dir, result_path):
         'AREA:free%s:free:STACK' % color_free,
         '-m', '2',
         '--lower-limit', '0',
-        '--upper-limit', 'total',
-        '--alt-autoscale')
+        '--rigid')
 
 
 def plot_network(start_time, end_time, host, rrd_dir, result_path):
