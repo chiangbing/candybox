@@ -20,27 +20,34 @@ import color
 
 def plot_disk(start_time, end_time, host, rrd_dir, result_path):
     '''Plot a disk utilization for all disks'''
-    colors = deque([color.CRIMSON, color.DODGERBLUE], maxlen=2)
-    offset = color.Color(50, 50, 50)
+    colors = deque([color.BLUE, color.DARKBLUE, color.SLATEBLUE, color.DARKSLATEBLUE,
+                    color.MEDIUMPURPLE, color.INDIGO, color.DARKORCHID, color.DARKVIOLET,
+                    color.MEDIUMORCHID, color.THISTLE, color.PLUM, color.VIOLET,
+                    color.MAGENTA, color.PURPLE, color.ORCHID, color.MEDIUMVIOLETRED,
+                    color.DEEPPINK, color.HOTPINK, color.PALEVIOLETRED, color.CRIMSON,
+                    color.PINK, color.LIGHTPINK],
+                    maxlen=22)
+    offset = color.Color(90, 90, 90)
 
     disk_rrds = glob.glob('%s/sd*.rrd' % rrd_dir)
+    disk_rrds.sort()
     args = [
         result_path,
         '--imgformat', 'PNG',
         '--start', start_time.strftime('%s'),
         '--end', end_time.strftime('%s'),
         '--vertical-label', 'Percent',
-        '--title', 'Disk Utilization',
+        '--title', '%s Disk Utilization' % host,
         '--upper-limit', '100']
     for d in disk_rrds:
         dname = path.splitext(path.basename(d))[0]
-        rrd_path = path.join(rrd_dir, d)
         dcolor = colors.popleft()
         args.extend([
-            'DEF:%s=%s:sum:AVERAGE' % (dname, rrd_path),
+            'DEF:%s=%s:sum:AVERAGE' % (dname, d),
             'AREA:%s%s:%s:STACK' % (dname, dcolor, dname)])
         colors.append(dcolor + offset)
     args.extend(['-m', '2'])
+    rrdtool.graph(*args)
 
 
 def plot_mem(start_time, end_time, host, rrd_dir, result_path):
@@ -59,7 +66,7 @@ def plot_mem(start_time, end_time, host, rrd_dir, result_path):
         '--imgformat', 'PNG',
         '--start', start_time.strftime('%s'),
         '--end', end_time.strftime('%s'),
-        '--vertical-label', 'Bytes',
+        '--vertical-label', 'MB',
         '--title', '%s Memory Report' % host,
         'DEF:total=%s:sum:AVERAGE' % path_total,
         'DEF:free=%s:sum:AVERAGE' % path_free,
@@ -91,8 +98,8 @@ def plot_network(start_time, end_time, host, rrd_dir, result_path):
         '--title', '%s Network Report' % host,
         'DEF:in=%s:sum:AVERAGE' % path_in,
         'DEF:out=%s:sum:AVERAGE' % path_out,
-        'LINE1:in%sBB:in' % color_in,
-        'LINE1:out%sBB:out' % color_out,
+        'LINE2:in%sBB:in' % color_in,
+        'LINE2:out%sBB:out' % color_out,
         '-m', '2')
 
 
