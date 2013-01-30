@@ -20,15 +20,21 @@ if [ "$BASH_SOURCE" == "$0" ]; then
     for tab in ${tables[@]}; do
       echo -n "create '$tab', "
       echo "describe '$tab'" | hbase shell | \
-        awk 'BEGIN { x = 0 } 
-            { if ($0 ~ /^DESC/) { 
-                x=1; next; 
-              } 
-              if ($0 ~ /row\(s\)/) x=0; 
-              if (x == 1) { 
-                match($0, /FAMILIES => \[(.*)\]/, arr); 
-                print arr[1]
+        awk 'BEGIN { x = 0; ORS=""; }
+            { if ($0 ~ /^DESC/) { x=1; next; }
+              if ($0 ~ /row\(s\)/) { x=0; }
+              if (x == 0) { next; }
+              if (x == 1) {
+                gsub(/[ \t\v\n\r\f]/, "");
+                match($0, /FAMILIES=>\[(.*)$/, arr);
+                gsub(/(true|false)$/, "", arr[1]);
+                print arr[1];
+                x += 1;
+              } else {
+                gsub(/[ \t\v\n\r\f]/, "");
+                print $0;
               }
-            }'
+            }
+            END { print "\n" }'
     done
 fi
