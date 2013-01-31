@@ -24,17 +24,13 @@ if [ "$BASH_SOURCE" == "$0" ]; then
             { if ($0 ~ /^DESC/) { x=1; next; }
               if ($0 ~ /row\(s\)/) { x=0; }
               if (x == 0) { next; }
+              gsub(/[ \t\v\n\r\f]/, "");
               if (x == 1) {
-                gsub(/[ \t\v\n\r\f]/, "");
-                match($0, /FAMILIES=>\[(.*)$/, arr);
-                gsub(/(true|false)$/, "", arr[1]);
-                schema = (schema arr[1]);
+                gsub(/(true|false)$/, "");
                 x += 1;
-              } else {
-                gsub(/[ \t\v\n\r\f]/, "");
-                schema = (schema $0);
               }
+              schema = (schema $0);
             }
-            END { gsub(/\]\}$/, "", schema); print schema "\n"; }'
+            END { match(schema, /FAMILIES=>\[(.*)\]\}$/, arr); print arr[1]; }'
     done
 fi
