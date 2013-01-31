@@ -18,9 +18,9 @@ if [ "$BASH_SOURCE" == "$0" ]; then
 
     # output create table statement for each table
     for tab in ${tables[@]}; do
-      echo -n "create '$tab', "
+      echo -n "create '$tab',"
       echo "describe '$tab'" | hbase shell | \
-        awk 'BEGIN { x = 0; ORS=""; }
+        awk 'BEGIN { x = 0; schema = ""; }
             { if ($0 ~ /^DESC/) { x=1; next; }
               if ($0 ~ /row\(s\)/) { x=0; }
               if (x == 0) { next; }
@@ -28,13 +28,13 @@ if [ "$BASH_SOURCE" == "$0" ]; then
                 gsub(/[ \t\v\n\r\f]/, "");
                 match($0, /FAMILIES=>\[(.*)$/, arr);
                 gsub(/(true|false)$/, "", arr[1]);
-                print arr[1];
+                schema = (schema arr[1]);
                 x += 1;
               } else {
                 gsub(/[ \t\v\n\r\f]/, "");
-                print $0;
+                schema = (schema $0);
               }
             }
-            END { print "\n" }'
+            END { gsub(/\]\}$/, "", schema); print schema "\n"; }'
     done
 fi
