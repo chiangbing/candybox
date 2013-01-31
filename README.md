@@ -26,4 +26,4 @@ Import HBase table data from specified directory to tables. (via [org.apache.had
 ```bash
 $ ./imp_data.sh <inputdir> [tablelist]
 ```
-if `tablelist` is abset, all sub-directory names in `inputdir` is used as tables.
+if `tablelist` is absent, all sub-directory names in `inputdir` is used as tables.
