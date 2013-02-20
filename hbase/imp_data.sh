@@ -2,7 +2,7 @@
 
 usage() {
   if [ ! -z "$1" ]; then
-    echo "error: "$1 > &2x
+    echo "error: "$1 >&2
   fi
   echo "imp_data.sh [-l|--list <table list>] [-p|--parallel <num>] -i|--input <input dir>" >&2
   echo "  Note: <input dir> should always be the directory containing table sub-directries." >&2
@@ -24,9 +24,9 @@ get_tables() {
 import_tab() {
   local tab=$1
   local indir=$2
-  echo "Start importing $tab at "$(date "+%Y-%m-%d %H:%M:%S")"..."
+  echo "Start importing $tab at "$(date +"%Y-%m-%d %H:%M:%S")"..."
   hbase org.apache.hadoop.hbase.mapreduce.Import "$tab" "$indir"
-  echo "End importing $tab at"$(date "+%Y-%m-%d %H:%M:%S")"."
+  echo "End importing $tab at "$(date +"%Y-%m-%d %H:%M:%S")"."
 }
 
 # main

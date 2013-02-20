@@ -19,9 +19,9 @@ get_tables() {
 export_tab() {
   local tab=$1
   local outdir=$2
-  echo "Start exporting $tab at "$(date "+%Y-%m-%d %H:%M:%S")"..."
+  echo "Start exporting $tab at "$(date +"%Y-%m-%d %H:%M:%S")"..."
   hbase org.apache.hadoop.hbase.mapreduce.Export "$tab" "$outdir"
-  echo "End exporting $tab at"$(date "+%Y-%m-%d %H:%M:%S")"."
+  echo "End exporting $tab at "$(date +"%Y-%m-%d %H:%M:%S")"."
 }
 
 # main
