@@ -4,21 +4,21 @@ HBase Export/Import
 ### exp_schema.sh
 Export HBase table schemas (dump to stdout).
 ```bash
-$ ./exp_schema.sh [tablelist]
+$ exp_schema.sh [-l|--list <table_list>]
 ```
-The optional argument `tablelist` should be a file containing a list of table name to be exported. If `tablelist` is absent, then schema of all tables are dumped to stdout.
+The optional argument `table_list` should be a file containing a list of table name to be exported. If `table_list` is absent, then schema of all tables are dumped to stdout.
 The dumped schema can be later executed in `hbase shell` to create tables.
 
 ### exp_data.sh
 Export HBase table data to specified directory. (via [org.apache.hadoop.hbase.mapreduce.Export](http://hbase.apache.org/book/ops_mgt.html#export))
 ```bash
-$ ./exp_data.sh <outputdir> [tablelist]
+$ exp_data.sh [-l|--list <table_list>] [-p|--parallel <parallel_num>] -o|--output <output_dir>
 ```
-If `tablelist` is absent, all tables are exported. The exported data can be imported to current/another cluster later with `imp_data.sh`.
+If `table_list` is absent, all table data are exported to `output_dir`. If `table_list` is specified, only tables in `table_list` are exported. The exported data can be imported to current/another cluster later with `imp_data.sh`. Optional argument `parallel_num` indicates the maximum parallel running jobs.
 
 ### imp_data.sh
 Import HBase table data from specified directory to tables. (via [org.apache.hadoop.hbase.mapreduce.Import](http://hbase.apache.org/book/ops_mgt.html#import) )
 ```bash
-$ ./imp_data.sh <inputdir> [tablelist]
+$ imp_data.sh [-l|--list <table_list>] [-p|--parallel <parallel_num>] -i|--input <input_dir>
 ```
-if `tablelist` is absent, all sub-directory names in `inputdir` is used as tables.
+If `table_list` is absent, all sub-directory names in `input_dir` is used as tables; or tables in `table_list` are to be imported. Optional argument `parallel_num` indicates the maximum parallel running jobs.
