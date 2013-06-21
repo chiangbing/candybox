@@ -109,7 +109,6 @@ def plot_disk_util(host_rrd, opts):
     _reset_stack_color()
     hostname = _extract_hostname(host_rrd)
     result_path = os.path.join(opts.result_dir, '%s_disk_util.png' % hostname)
-    # find out rrds for disk util
     disk_rrds = _grep_rrds(host_rrd, opts.disk_util_pattern, 'disk')
     start_time, end_time = _get_time_range(disk_rrds.itervalues().next(), opts)
     args = [result_path,
@@ -135,7 +134,6 @@ def plot_disk_read_rate(host_rrd, opts):
     hostname = _extract_hostname(host_rrd)
     result_path = os.path.join(opts.result_dir,
                                '%s_disk_read_rate.png' % hostname)
-    # find out rrds for disk util
     disk_rrds = _grep_rrds(host_rrd, opts.disk_read_rate_pattern, 'disk')
     start_time, end_time = _get_time_range(disk_rrds.itervalues().next(), opts)
     args = [result_path,
@@ -281,7 +279,7 @@ def plot_cpu(host_rrd, opts):
         '--start', start_time,
         '--end', end_time,
         '--vertical-label', 'Percent',
-        '--title', '%s CPU Report' % hostname,
+        '--title', _gen_title(hostname, 'CPU', opts),
         'DEF:user=%s:sum:AVERAGE' % cpu_user_rrd,
         'DEF:system=%s:sum:AVERAGE' % cpu_sys_rrd,
         'DEF:wait=%s:sum:AVERAGE' % cpu_wait_rrd,
