@@ -6,14 +6,13 @@
 # which you can view in ganglia, but it provide a batch generating
 # method.
 
-
 import optparse
 import rrdtool
 import re
 import os
 from os import path
 from collections import deque
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 ###### Colors ######
@@ -73,8 +72,8 @@ def _grep_rrds(rrd_dir, pattern, result_key=None):
     return rrds
 
 
-ONE_DAY_SECS = 86400
 ONE_HOUR_SECS = 3600
+ONE_DAY_SECS = 86400
 
 
 def _get_time_range(rrd, opts):
@@ -84,12 +83,21 @@ def _get_time_range(rrd, opts):
     if opts.start_time is not None and opts.end_time is not None:
         start_time = opts.start_time.strftime('%s')
         end_time = opts.end_time.strftime('%s')
-    if opts.last_day:
+    elif opts.last_day:
         end_time = rrdtool.last(rrd)
         start_time = end_time - ONE_DAY_SECS
-    if opts.last_hour:
+    elif opts.last_hour:
         end_time = rrdtool.last(rrd)
         start_time = end_time - ONE_HOUR_SECS
+    elif opts.last_week:
+        end_time = rrdtool.last(rrd)
+        start_time = end_time - ONE_DAY_SECS * 7
+    elif opts.last_month:
+        end_time = rrdtool.last(rrd)
+        start_time = end_time - ONE_DAY_SECS * 28
+    elif opts.last_year:
+        end_time = rrdtool.last(rrd)
+        start_time = end_time - ONE_DAY_SECS * 365
     return str(start_time), str(end_time)
 
 
@@ -99,6 +107,12 @@ def _gen_title(host, type_, opts):
         title += ' last day'
     elif opts.last_hour:
         title += ' last hour'
+    elif opts.last_week:
+        title += ' last week'
+    elif opts.last_month:
+        title += ' last month'
+    elif opts.last_year:
+        title += ' last year'
     return title
 
 
@@ -311,19 +325,32 @@ def _parse_args():
     parser.add_option('--start',
                       metavar='START_TIME',
                       dest='start_time',
-                      help='start time of report')
+                      help='start time of report. Default: END_TIME - 1 day.')
     parser.add_option('--end',
                       metavar='END_TIME',
                       dest='end_time',
-                      help='end_time of report')
+                      help='end_time of report. Default: START_TIME + 1 day.')
     parser.add_option('--last-day',
                       action='store_true',
                       dest='last_day',
-                      help='generate report for last day')
+                      help='generate report for the last day. Here, \'last\' '
+                           'refer to the last time in rrd data.')
     parser.add_option('--last-hour',
                       action='store_true',
                       dest='last_hour',
-                      help='generate report for last hour')
+                      help='generate report for the last hour')
+    parser.add_option('--last-week',
+                      action='store_true',
+                      dest='last_week',
+                      help='generate report for the last week')
+    parser.add_option('--last-month',
+                      action='store_true',
+                      dest='last_month',
+                      help='generate report for the last month')
+    parser.add_option('--last-year',
+                      action='store_true',
+                      dest='last_year',
+                      help='generate report for the last year')
     parser.add_option('--disk-util-pattern',
                       dest='disk_util_pattern',
                       default='diskstat_(?P<disk>\w+)_percent_io_time',
@@ -337,10 +364,23 @@ def _parse_args():
                       default='diskstat_(?P<disk>\w+)_write_bytes_per_sec',
                       help='a regex to search rrd files for disk write rate')
     opts, rrds = parser.parse_args()
+    # parse value for --start and --end
     if opts.start_time is not None:
         opts.start_time = datetime.strptime(opts.start_time, '%Y%m%d%H%M%S')
     if opts.end_time is not None:
         opts.end_time = datetime.strptime(opts.end_time, '%Y%m%d%H%M%S')
+    # set default time options
+    if opts.start_time is not None and opts.end_time is None:
+        opts.end_time = opts.start_time + timedelta(days=1)
+    elif opts.start_time is None and opts.end_time is not None:
+        opts.start_time = opts.end_time - timedelta(days=1)
+    if opts.start_time is None and opts.end_time is None \
+            and opts.last_hour is None \
+            and opts.last_day is None \
+            and opts.last_week is None \
+            and opts.last_month is None \
+            and opts.last_year is None:
+        opts.last_day = True
     opts.rrds = rrds
     return opts
 
