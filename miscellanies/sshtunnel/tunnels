@@ -1,0 +1,6 @@
+# Configuration for sshtunnel.
+# This configuration consists of one or more lines. Each of them represent a SSH reverse tunnel.
+# Empty lines or lines starting with sharp(#) is ignored.
+
+# <tunnel name> <remote proxy port>:<local host>:<local ssh port> <remote user>:<remote host> -p <remote ssh port>
+# example1      21100:localhost:22                                clay@www.remotehost.com     -p 22
