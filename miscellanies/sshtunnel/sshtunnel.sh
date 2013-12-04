@@ -26,7 +26,7 @@ log_info() {
 }
 
 pid_of() {
-    ps aux | grep "$*" | awk '{print $2}'
+    ps aux | grep "$*" | grep -v 'grep' | awk '{print $2}'
 }
 
 
@@ -46,7 +46,7 @@ do
             # restart the ssh tunnel if it does not exist
             log_info "ssh tunnel $tunnel_name not found, restarting..."
             log_info "$tunnel_name opts: $tunnel_opts[@]"
-            ( /usr/bin/ssh -CNfg -R ${tunnel_opts[@]} ) > sshtunnel_"$tunnel_name".log
+            ( /usr/bin/ssh -CNfg -R ${tunnel_opts[@]} ) > sshtunnel_"$tunnel_name".log 2>&1
         fi
     done < <(sed -e '/^\s*$/d' -e '/^#/d' tunnels)
 
